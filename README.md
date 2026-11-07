@@ -22,7 +22,7 @@ In the repository settings, enable GitHub Pages and select **GitHub Actions** as
 
 Add **https://spmse.github.io/stsfctry-spdrn-chcklst/overlay.html** as an OBS Browser Source. The overlay has a transparent background; use a source width of at least 560 pixels and enough height for your objectives. To control it, right-click the source in OBS and choose **Interact**, move to the upper-right corner and open **Controls**. Close Controls before returning to your stream. The dashboard and overlay synchronize between pages in the same browser profile. OBS uses its own browser storage, so a separate browser's dashboard will not control the OBS source.
 
-This is an unofficial fan-made tool and is not affiliated with Coffee Stain Studios or FICSIT.
+This is a fan-made, unofficial tool and is not affiliated with or endorsed by Coffee Stain Studios. All trademarks and third-party material remain the property of their respective owners; no ownership is claimed, and data accuracy is not guaranteed.
 
 ## Development
 
