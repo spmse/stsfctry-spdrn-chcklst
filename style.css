@@ -11,6 +11,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #ffc071;outline-offse
 .brand-dot,.heading-dot{color:var(--orange)}
 .brand small{display:block;font:600 8px/1.5 var(--mono);letter-spacing:.18em}
 .topbar-right,.clock-state{font:600 10px var(--mono);letter-spacing:.08em;color:#adb0a7}
+.topbar-right a{color:var(--orange)}
 .topbar-divider{color:var(--orange);padding:0 10px}
 .status-light{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--orange);margin-right:7px}
 .intro{display:flex;justify-content:space-between;align-items:center;padding:56px 0 42px}

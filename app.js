@@ -15,19 +15,22 @@ const list = document.getElementById('milestone-list');
 const feedback = document.getElementById('feedback');
 let state = { elapsed: 0, startedAt: null, milestones: defaults.map(item => ({ ...item, actual: null })) };
 
-try {
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  if (saved && Number.isFinite(saved.elapsed) && saved.elapsed >= 0 &&
-      (saved.startedAt === null || (Number.isFinite(saved.startedAt) && saved.startedAt >= 0)) &&
-      Array.isArray(saved.milestones) && saved.milestones.every(item =>
-        item && typeof item.name === 'string' && item.name.trim() && item.name.length <= 80 &&
-        Number.isSafeInteger(item.target) && item.target >= 0 &&
-        (item.actual === null || (Number.isFinite(item.actual) && item.actual >= 0)))) {
-    state = saved;
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && Number.isFinite(saved.elapsed) && saved.elapsed >= 0 &&
+        (saved.startedAt === null || (Number.isFinite(saved.startedAt) && saved.startedAt >= 0)) &&
+        Array.isArray(saved.milestones) && saved.milestones.every(item =>
+          item && typeof item.name === 'string' && item.name.trim() && item.name.length <= 80 &&
+          Number.isSafeInteger(item.target) && item.target >= 0 &&
+          (item.actual === null || (Number.isFinite(item.actual) && item.actual >= 0)))) {
+      state = saved;
+    }
+  } catch {
+    // Storage may be unavailable in private browsing or an embedded browser.
   }
-} catch {
-  // Storage may be unavailable in private browsing or an embedded browser.
 }
+load();
 
 function save() {
   try {
@@ -203,3 +206,10 @@ document.getElementById('add-form').addEventListener('submit', event => {
 renderClock();
 renderMilestones();
 setInterval(renderClock, 100);
+window.addEventListener('storage', event => {
+  if (event.key === STORAGE_KEY) {
+    load();
+    renderClock();
+    renderMilestones();
+  }
+});

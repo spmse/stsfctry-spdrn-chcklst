@@ -10,6 +10,8 @@ The included objectives and targets are examples. Edit them directly, delete the
 
 ## GitHub Pages and OBS
 
-In the repository settings, enable GitHub Pages and deploy from the desired branch's root directory. No build step is required. Once published, the site will be available at **https://spmse.github.io/stsfctry-spdrn-chcklst/**. Add that URL as an OBS Browser Source; a width of 1200 pixels or more is recommended. Interact with the source in OBS to control the timer and milestones. For a smaller source, the layout adapts to the available width.
+In the repository settings, enable GitHub Pages and deploy from the desired branch's root directory. No build step is required. Once published, the normal dashboard will be available at **https://spmse.github.io/stsfctry-spdrn-chcklst/**.
+
+Add **https://spmse.github.io/stsfctry-spdrn-chcklst/overlay.html** as an OBS Browser Source. The overlay has a transparent background; use a source width of at least 560 pixels and enough height for your objectives. To control it, right-click the source in OBS and choose **Interact**, move to the upper-right corner and open **Controls**. Close Controls before returning to your stream. The dashboard and overlay synchronize between pages in the same browser profile. OBS uses its own browser storage, so a separate browser's dashboard will not control the OBS source.
 
 This is an unofficial fan-made tool and is not affiliated with Coffee Stain Studios or FICSIT.

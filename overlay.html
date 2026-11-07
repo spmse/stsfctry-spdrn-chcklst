@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FICSIT // Stream Overlay</title>
+  <link rel="stylesheet" href="overlay.css">
+  <script src="overlay.js" defer></script>
+</head>
+<body>
+  <main class="overlay">
+    <header><strong>FICSIT<span>.</span></strong><small>PROJECT ASSEMBLY // SPEEDRUN</small></header>
+    <div class="clock"><span>MISSION CLOCK</span><strong id="overlay-timer">00:00:00.0</strong><small id="overlay-state">STANDBY</small></div>
+    <div class="heading"><span>MISSION MILESTONES</span><strong id="overlay-progress">0 / 0</strong></div>
+    <div class="columns"><span>OBJECTIVE</span><span>TARGET</span><span>ACTUAL</span><span>+/−</span></div>
+    <div id="overlay-milestones"></div>
+    <footer>COMPLY. BUILD. SUCCEED. <span>▰</span></footer>
+  </main>
+  <details class="controls">
+    <summary>⚙ CONTROLS</summary>
+    <iframe src="index.html" title="Speedrun dashboard controls"></iframe>
+  </details>
+</body>
+</html>
