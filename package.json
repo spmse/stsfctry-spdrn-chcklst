@@ -1,0 +1,22 @@
+{
+  "name": "stsfctry-spdrn-chcklst",
+  "version": "1.0.0",
+  "description": "A Satisfactory-inspired speedrun dashboard for the browser and OBS. Track elapsed time and compare your actual checkpoint splits against your planned targets.",
+  "scripts": {
+    "test": "node --test",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-store": "^0.11.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.2.1",
+    "vite": "^8.3.6"
+  },
+  "private": true,
+  "type": "module"
+}

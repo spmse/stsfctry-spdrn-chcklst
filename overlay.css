@@ -1,0 +1,31 @@
+:root{color-scheme:dark;font-family:Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:transparent;color:#eff0e9}
+.overlay{width:min(100%,560px);background:rgba(24,26,25,.96);border:1px solid #565b51;border-top:5px solid #f28b22;box-shadow:0 4px 18px #0008;padding:18px}
+header,.heading,.clock,.columns,.milestone,footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+header{border-bottom:1px solid #4a4e47;padding-bottom:12px}
+header strong{font-size:24px;letter-spacing:.03em}
+header strong span,footer span{color:#f28b22}
+header small,.clock span,.clock small,.heading,.columns,footer{font:700 10px 'Courier New',monospace;letter-spacing:.04em}
+header small,.clock span,.columns,footer{color:#a7ada2}
+.clock{padding:18px 0;flex-wrap:wrap}
+.clock strong{font:700 clamp(28px,7vw,46px) 'Courier New',monospace;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.clock small{color:#f28b22}
+.heading{border-top:3px solid #f28b22;padding:12px 0;color:#f28b22}
+.columns,.milestone{display:grid;grid-template-columns:minmax(0,1fr) 70px 70px 76px;gap:8px}
+.columns{padding:5px 0;border-bottom:1px solid #555a51}
+.milestone{font:12px 'Courier New',monospace;padding:9px 0;border-bottom:1px solid #383d37;font-variant-numeric:tabular-nums}
+.milestone span:first-child{overflow-wrap:anywhere;font-weight:bold}
+.milestone span:not(:first-child),.columns span:not(:first-child){text-align:right}
+.ahead{color:#b4d494}.behind{color:#f3a05b}
+.overlay-materials{margin-top:16px}
+.overlay-material-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.overlay-material-columns h2{font:700 10px 'Courier New',monospace;color:#a7ada2;margin:0 0 8px}
+.overlay-material-columns ul{list-style:none;padding:0;margin:0}
+.overlay-material-columns li,.overlay-material-columns p{font:12px/1.5 'Courier New',monospace;margin:0;overflow-wrap:anywhere}
+.overlay-material-columns li{padding:3px 0}
+footer{padding-top:14px}
+.controls{position:fixed;top:8px;right:8px;z-index:2}
+.controls summary{cursor:pointer;opacity:0;background:#f28b22;color:#191b18;padding:10px;font:700 11px 'Courier New',monospace}
+.controls:hover summary,.controls:focus-within summary,.controls[open] summary{opacity:1}
+.controls iframe{display:block;width:min(900px,95vw);height:min(800px,85vh);border:2px solid #f28b22;background:#181a19}
