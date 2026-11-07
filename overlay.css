@@ -18,6 +18,12 @@ header small,.clock span,.columns,footer{color:#a7ada2}
 .milestone span:first-child{overflow-wrap:anywhere;font-weight:bold}
 .milestone span:not(:first-child),.columns span:not(:first-child){text-align:right}
 .ahead{color:#b4d494}.behind{color:#f3a05b}
+.overlay-materials{margin-top:16px}
+.overlay-material-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.overlay-material-columns h2{font:700 10px 'Courier New',monospace;color:#a7ada2;margin:0 0 8px}
+.overlay-material-columns ul{list-style:none;padding:0;margin:0}
+.overlay-material-columns li,.overlay-material-columns p{font:12px/1.5 'Courier New',monospace;margin:0;overflow-wrap:anywhere}
+.overlay-material-columns li{padding:3px 0}
 footer{padding-top:14px}
 .controls{position:fixed;top:8px;right:8px;z-index:2}
 .controls summary{cursor:pointer;opacity:0;background:#f28b22;color:#191b18;padding:10px;font:700 11px 'Courier New',monospace}

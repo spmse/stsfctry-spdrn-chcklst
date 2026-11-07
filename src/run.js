@@ -1,4 +1,13 @@
+import { validGoal } from './materials.js';
+
 export const STORAGE_KEY = 'ficsit-speedrun-v1';
+
+const phase1Materials = [{ item: 'Smart Plating', quantity: 50, mode: 'recipe' }];
+const phase2Materials = [
+  { item: 'Smart Plating', quantity: 1000, mode: 'recipe' },
+  { item: 'Versatile Framework', quantity: 1000, mode: 'recipe' },
+  { item: 'Automated Wiring', quantity: 100, mode: 'recipe' }
+];
 
 export const scenarios = {
   phase1: {
@@ -7,7 +16,7 @@ export const scenarios = {
       ['Complete HUB upgrades', 1800],
       ['Build the Space Elevator', 3600],
       ['Automate Smart Plating', 5400],
-      ['Complete Project Assembly: Phase 1', 7200]
+      ['Complete Project Assembly: Phase 1', 7200, phase1Materials]
     ]
   },
   phase2: {
@@ -15,10 +24,10 @@ export const scenarios = {
     splits: [
       ['Complete HUB upgrades', 1800],
       ['Build the Space Elevator', 3600],
-      ['Complete Project Assembly: Phase 1', 7200],
+      ['Complete Project Assembly: Phase 1', 7200, phase1Materials],
       ['Unlock coal power', 9000],
       ['Unlock steel production', 10800],
-      ['Complete Project Assembly: Phase 2', 18000]
+      ['Complete Project Assembly: Phase 2', 18000, phase2Materials]
     ]
   }
 };
@@ -28,7 +37,10 @@ export function preset(id) {
     scenario: id,
     elapsed: 0,
     startedAt: null,
-    milestones: scenarios[id].splits.map(([name, target]) => ({ name, target, actual: null }))
+    materialStage: scenarios[id].splits.findIndex(([, , materials]) => materials?.length),
+    milestones: scenarios[id].splits.map(([name, target, materials]) => ({
+      name, target, actual: null, materials: (materials || []).map(goal => ({ ...goal }))
+    }))
   };
 }
 
@@ -38,7 +50,8 @@ export function validRun(saved) {
     Array.isArray(saved.milestones) && saved.milestones.every(item =>
       item && typeof item.name === 'string' && item.name.trim() && item.name.length <= 80 &&
       Number.isSafeInteger(item.target) && item.target >= 0 && item.target <= Number.MAX_SAFE_INTEGER / 1000 &&
-      (item.actual === null || (Number.isFinite(item.actual) && item.actual >= 0)));
+      (item.actual === null || (Number.isFinite(item.actual) && item.actual >= 0)) &&
+      (item.materials === undefined || (Array.isArray(item.materials) && item.materials.every(validGoal))));
 }
 
 export function readRun(raw) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useSelector } from '@tanstack/react-store';
 import { elapsed, formatTime, parseTime, preset, scenarios } from './run.js';
+import { calculateMaterials, MAX_QUANTITY, recipes } from './materials.js';
 import { runStore, updateRun } from './store.js';
 import '../style.css';
 
@@ -11,6 +12,9 @@ function Dashboard() {
   const [feedback, setFeedback] = useState('');
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
+  const [materialType, setMaterialType] = useState('Smart Plating');
+  const [materialName, setMaterialName] = useState('');
+  const [materialQuantity, setMaterialQuantity] = useState('1');
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 100);
@@ -36,6 +40,9 @@ function Dashboard() {
 
   const complete = run.milestones.filter(item => item.actual !== null).length;
   const [whole, fraction] = formatTime(elapsed(run, now), true).split('.');
+  const stageIndex = Number.isInteger(run.materialStage) && run.materialStage >= 0 && run.materialStage < run.milestones.length ? run.materialStage : 0;
+  const stage = run.milestones[stageIndex];
+  const materials = calculateMaterials(stage?.materials);
 
   return <main className="console">
     <header className="topbar">
@@ -88,7 +95,7 @@ function Dashboard() {
             }}/></td>
             <td className="actual">{item.actual === null ? '—' : formatTime(item.actual)}</td>
             <td className={difference === null ? '' : difference > 0 ? 'delta-behind' : 'delta-ahead'}>{difference === null ? '—' : `${difference > 0 ? '+' : difference < 0 ? '−' : ''}${formatTime(Math.abs(difference) * 1000)}`}</td>
-            <td><div className="row-actions"><button type="button" className="row-button" aria-label={`${item.actual === null ? 'Record' : 'Undo'} split for ${item.name}`} onClick={() => editMilestone(index, { actual: item.actual === null ? elapsed(runStore.state) : null })}>{item.actual === null ? 'SPLIT' : 'UNDO'}</button><button type="button" className="row-button delete-button" aria-label={`Delete ${item.name}`} onClick={() => update(current => ({ ...current, milestones: current.milestones.filter((_, i) => i !== index) }))}>×</button></div></td>
+            <td><div className="row-actions"><button type="button" className="row-button" aria-label={`${item.actual === null ? 'Record' : 'Undo'} split for ${item.name}`} onClick={() => editMilestone(index, { actual: item.actual === null ? elapsed(runStore.state) : null })}>{item.actual === null ? 'SPLIT' : 'UNDO'}</button><button type="button" className="row-button delete-button" aria-label={`Delete ${item.name}`} onClick={() => update(current => ({ ...current, materialStage: index < stageIndex ? stageIndex - 1 : index === stageIndex ? 0 : stageIndex, milestones: current.milestones.filter((_, i) => i !== index) }))}>×</button></div></td>
           </tr>;
         })}</tbody></table></div>
       <form className="add-form" onSubmit={event => {
@@ -103,6 +110,50 @@ function Dashboard() {
         <button className="button button-add" type="submit"><span aria-hidden="true">＋</span> ADD OBJECTIVE</button>
       </form>
       <p className="form-help">Time format: HH:MM:SS or MM:SS. Edit an objective or target directly in the table.</p><p className="feedback" role="status" aria-live="polite">{feedback}</p>
+    </section>
+    <section className="materials-panel" aria-labelledby="materials-heading">
+      <p className="eyebrow"><span>03</span> &nbsp; / &nbsp; MATERIAL PLANNING</p>
+      <h2 id="materials-heading">Stage materials<span className="heading-dot">.</span></h2>
+      {stage ? <>
+        <label htmlFor="material-stage">SELECT STAGE</label>
+        <select id="material-stage" value={stageIndex} onChange={event => update(current => ({ ...current, materialStage: Number(event.target.value) }))}>
+          {run.milestones.map((item, index) => <option value={index} key={index}>{item.name}</option>)}
+        </select>
+        <div id="material-summary">
+          <h3 id="material-stage-name">{stage.name}</h3>
+          <div className="material-columns">
+            <div><h4>PRODUCE</h4><ul id="material-produce">{materials.produce.map(item => <li key={item.item}><span>{item.item}</span><strong>{' × '}{item.quantity}</strong></li>)}</ul>{!materials.produce.length && <p>None configured.</p>}</div>
+            <div><h4>SUPPLY / HANDCRAFT</h4><ul id="material-supply">{materials.supply.map(item => <li key={item.item}><span>{item.item}</span><strong>{' × '}{item.quantity}</strong></li>)}</ul>{!materials.supply.length && <p>None configured.</p>}</div>
+          </div>
+        </div>
+        <p className="form-help">Inputs are immediate ingredients, not raw-resource totals. Standard recipes only; no alternate recipes or inventory deductions.</p>
+        <h3>Configure this stage</h3>
+        {(stage.materials || []).map((goal, index) => <div className="material-goal" key={index}>
+          <span>{goal.item} <small>{goal.mode === 'recipe' ? '(standard recipe)' : '(manual supply)'}</small></span>
+          <label className="sr-only" htmlFor={`goal-${index}`}>Quantity for {goal.item}</label>
+          <input id={`goal-${index}`} type="number" min="1" max={MAX_QUANTITY} step="1" defaultValue={goal.quantity} key={goal.quantity} onBlur={event => {
+            const quantity = Number(event.target.value);
+            if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) { event.target.value = goal.quantity; setFeedback(`Enter a whole quantity from 1 to ${MAX_QUANTITY}.`); return; }
+            if (quantity !== goal.quantity) editMilestone(stageIndex, { materials: stage.materials.map((entry, i) => i === index ? { ...entry, quantity } : entry) });
+          }} />
+          <button type="button" className="row-button delete-button" aria-label={`Remove ${goal.item} from ${stage.name}`} onClick={() => editMilestone(stageIndex, { materials: stage.materials.filter((_, i) => i !== index) })}>×</button>
+        </div>)}
+        <form className="material-form" onSubmit={event => {
+          event.preventDefault();
+          const quantity = Number(materialQuantity);
+          const item = materialType === 'manual' ? materialName.trim() : materialType;
+          if (!item || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) { setFeedback(`Enter an item and a whole quantity from 1 to ${MAX_QUANTITY}.`); return; }
+          editMilestone(stageIndex, { materials: [...(stage.materials || []), { item, quantity, mode: materialType === 'manual' ? 'manual' : 'recipe' }] });
+          setMaterialName(''); setMaterialQuantity('1');
+        }}>
+          <div><label htmlFor="material-type">ITEM / RECIPE</label><select id="material-type" value={materialType} onChange={event => setMaterialType(event.target.value)}>{Object.keys(recipes).map(item => <option key={item}>{item}</option>)}<option value="manual">Manual supply</option></select></div>
+          {materialType === 'manual' && <div><label htmlFor="material-name">ITEM NAME</label><input id="material-name" value={materialName} maxLength={80} required onChange={event => setMaterialName(event.target.value)} /></div>}
+          <div><label htmlFor="material-quantity">QUANTITY</label><input id="material-quantity" type="number" min="1" max={MAX_QUANTITY} step="1" required value={materialQuantity} onChange={event => setMaterialQuantity(event.target.value)} /></div>
+          <button className="button button-add" type="submit">＋ ADD MATERIAL</button>
+        </form>
+      </> : <p className="section-copy">Add an objective to configure its materials.</p>}
+      <p className="form-help">Recipe data is a small, bundled reference, not live wiki data. <a href="https://github.com/Sunset1014/Satisfactory-Production-Planner/blob/70185973519e5590dde85189ea37bb16c2363d6b/js/game-data.js">Recipe source</a>.</p>
+      <p className="feedback" role="status" aria-live="polite">{feedback}</p>
     </section>
     <footer><span><strong>FICSIT</strong> &nbsp; / &nbsp; PIONEER ASSISTANCE SYSTEM</span><span>COMPLY. BUILD. SUCCEED. <b>▰</b></span></footer>
   </main>;

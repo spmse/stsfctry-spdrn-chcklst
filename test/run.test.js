@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { elapsed, formatTime, parseTime, preset, readRun, scenarios } from '../src/run.js';
+import { calculateMaterials, validGoal } from '../src/materials.js';
 
 test('presets provide independent, complete example routes', () => {
   for (const [id, scenario] of Object.entries(scenarios)) {
@@ -32,4 +33,30 @@ test('time parsing and formatting handles long minutes and invalid inputs', () =
   assert.equal(parseTime('1:90'), null);
   assert.equal(parseTime('-1:00'), null);
   assert.equal(formatTime(5400123, true), '01:30:00.1');
+});
+
+test('phase presets have independent delivery requirements', () => {
+  const first = preset('phase1');
+  const second = preset('phase2');
+  assert.deepEqual(first.milestones.at(-1).materials, [{ item: 'Smart Plating', quantity: 50, mode: 'recipe' }]);
+  assert.deepEqual(second.milestones.at(-1).materials.map(goal => goal.quantity), [1000, 1000, 100]);
+  first.milestones.at(-1).materials[0].quantity = 1;
+  assert.equal(preset('phase1').milestones.at(-1).materials[0].quantity, 50);
+  assert.deepEqual(readRun(JSON.stringify(second)), second);
+});
+
+test('material calculations aggregate goals before rounding batches', () => {
+  const goals = [
+    { item: 'Versatile Framework', quantity: 1, mode: 'recipe' },
+    { item: 'Versatile Framework', quantity: 2, mode: 'recipe' },
+    { item: 'Smart Plating', quantity: 3, mode: 'recipe' },
+    { item: 'Rotor', quantity: 4, mode: 'manual' }
+  ];
+  assert.deepEqual(calculateMaterials(goals), {
+    produce: [{ item: 'Versatile Framework', quantity: 3, mode: 'recipe' }, { item: 'Smart Plating', quantity: 3, mode: 'recipe' }],
+    supply: [{ item: 'Modular Frame', quantity: 2 }, { item: 'Steel Beam', quantity: 24 }, { item: 'Reinforced Iron Plate', quantity: 3 }, { item: 'Rotor', quantity: 7 }]
+  });
+  assert.deepEqual(calculateMaterials(), { produce: [], supply: [] });
+  assert.equal(validGoal({ item: 'Rotor', quantity: 0, mode: 'manual' }), false);
+  assert.equal(validGoal({ item: 'Unknown', quantity: 1, mode: 'recipe' }), false);
 });

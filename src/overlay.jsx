@@ -4,7 +4,7 @@ import '../overlay.css';
 
 function Overlay() {
   const frame = useRef(null);
-  const [view, setView] = useState({ timer: '00:00:00.0', status: 'STANDBY', progress: '0 / 0', scenario: '', rows: [] });
+  const [view, setView] = useState({ timer: '00:00:00.0', status: 'STANDBY', progress: '0 / 0', scenario: '', rows: [], materialStage: '', produce: [], supply: [] });
 
   useEffect(() => {
     function update() {
@@ -22,7 +22,10 @@ function Overlay() {
         status: dashboard.getElementById('clock-state').textContent.trim(),
         progress: dashboard.getElementById('progress-count').textContent,
         scenario: dashboard.getElementById('scenario').selectedOptions[0]?.textContent,
-        rows
+        rows,
+        materialStage: dashboard.getElementById('material-stage-name')?.textContent || '',
+        produce: Array.from(dashboard.querySelectorAll('#material-produce li'), item => item.textContent),
+        supply: Array.from(dashboard.querySelectorAll('#material-supply li'), item => item.textContent)
       });
     }
     const interval = setInterval(update, 100);
@@ -36,6 +39,13 @@ function Overlay() {
       <div className="heading"><span>MISSION MILESTONES<br/><small>{view.scenario}</small></span><strong>{view.progress}</strong></div>
       <div className="columns"><span>OBJECTIVE</span><span>TARGET</span><span>ACTUAL</span><span>+/−</span></div>
       <div>{view.rows.map((row, index) => <div className="milestone" key={index}><span>{row.name}</span><span>{row.target}</span><span>{row.actual}</span><span className={row.deltaClass === 'delta-ahead' ? 'ahead' : row.deltaClass === 'delta-behind' ? 'behind' : ''}>{row.delta}</span></div>)}</div>
+      <section className="overlay-materials">
+        <div className="heading"><span>STAGE MATERIALS<br/><small>{view.materialStage || 'No stage selected'}</small></span></div>
+        <div className="overlay-material-columns">
+          <div><h2>PRODUCE</h2>{view.produce.length ? <ul>{view.produce.map((item, index) => <li key={index}>{item}</li>)}</ul> : <p>None configured.</p>}</div>
+          <div><h2>SUPPLY / HANDCRAFT</h2>{view.supply.length ? <ul>{view.supply.map((item, index) => <li key={index}>{item}</li>)}</ul> : <p>None configured.</p>}</div>
+        </div>
+      </section>
       <footer>COMPLY. BUILD. SUCCEED. <span>▰</span></footer>
     </main>
     <details className="controls"><summary>⚙ CONTROLS</summary><iframe ref={frame} src="index.html" title="Speedrun dashboard controls" /></details>
