@@ -58,7 +58,6 @@ function Dashboard() {
       <div className="scenario-controls">
         <label htmlFor="scenario">SCENARIO</label>
         <select id="scenario" value={run.scenario} onChange={event => selectPreset(event.target.value)}>
-          {run.scenario === 'custom' && <option value="custom">Custom / existing route</option>}
           {Object.entries(scenarios).map(([id, scenario]) => <option key={id} value={id}>{scenario.name}</option>)}
         </select>
         {run.scenario !== 'custom' && <button className="button button-secondary" type="button" onClick={() => selectPreset(run.scenario)}>RELOAD PRESET</button>}
@@ -102,7 +101,7 @@ function Dashboard() {
         event.preventDefault();
         const seconds = parseTime(target);
         if (!name.trim() || seconds === null) { setFeedback('Enter an objective and a valid target time in HH:MM:SS or MM:SS format.'); return; }
-        update(current => ({ ...current, milestones: [...current.milestones, { name: name.trim(), target: seconds, actual: null }] }));
+        update(current => ({ ...current, materialStage: current.milestones.length ? current.materialStage : 0, milestones: [...current.milestones, { name: name.trim(), target: seconds, actual: null }] }));
         setName(''); setTarget('');
       }}>
         <div><label htmlFor="new-name">NEW OBJECTIVE</label><input id="new-name" value={name} onChange={event => setName(event.target.value)} placeholder="e.g. Complete Phase 1" maxLength={80} required /></div>

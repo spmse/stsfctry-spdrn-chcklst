@@ -8,6 +8,17 @@ const phase2Materials = [
   { item: 'Versatile Framework', quantity: 1000, mode: 'recipe' },
   { item: 'Automated Wiring', quantity: 100, mode: 'recipe' }
 ];
+const phase3Materials = [
+  { item: 'Modular Engine', quantity: 500, mode: 'manual' },
+  { item: 'Adaptive Control Unit', quantity: 100, mode: 'manual' },
+  { item: 'Automated Wiring', quantity: 100, mode: 'manual' }
+];
+const phase4Materials = [
+  { item: 'Assembly Director System', quantity: 250, mode: 'manual' },
+  { item: 'Magnetic Field Generator', quantity: 250, mode: 'manual' },
+  { item: 'Thermal Propulsion Rocket', quantity: 100, mode: 'manual' },
+  { item: 'Nuclear Pasta', quantity: 1000, mode: 'manual' }
+];
 
 export const scenarios = {
   phase1: {
@@ -29,6 +40,41 @@ export const scenarios = {
       ['Unlock steel production', 10800],
       ['Complete Project Assembly: Phase 2', 18000, phase2Materials]
     ]
+  },
+  phase3: {
+    name: 'Any% — Phase 3 complete',
+    splits: [
+      ['Complete HUB upgrades', 1800],
+      ['Build the Space Elevator', 3600],
+      ['Complete Project Assembly: Phase 1', 7200, phase1Materials],
+      ['Unlock coal power', 9000],
+      ['Unlock steel production', 10800],
+      ['Complete Project Assembly: Phase 2', 18000, phase2Materials],
+      ['Unlock oil processing', 25200],
+      ['Unlock computers', 32400],
+      ['Complete Project Assembly: Phase 3', 43200, phase3Materials]
+    ]
+  },
+  phase4: {
+    name: 'Any% — Phase 4 complete',
+    splits: [
+      ['Complete HUB upgrades', 1800],
+      ['Build the Space Elevator', 3600],
+      ['Complete Project Assembly: Phase 1', 7200, phase1Materials],
+      ['Unlock coal power', 9000],
+      ['Unlock steel production', 10800],
+      ['Complete Project Assembly: Phase 2', 18000, phase2Materials],
+      ['Unlock oil processing', 25200],
+      ['Unlock computers', 32400],
+      ['Complete Project Assembly: Phase 3', 43200, phase3Materials],
+      ['Unlock aluminum production', 50400],
+      ['Unlock nuclear power', 64800],
+      ['Complete Project Assembly: Phase 4', 86400, phase4Materials]
+    ]
+  },
+  custom: {
+    name: 'Free form — configure your route',
+    splits: []
   }
 };
 
@@ -37,7 +83,7 @@ export function preset(id) {
     scenario: id,
     elapsed: 0,
     startedAt: null,
-    materialStage: scenarios[id].splits.findIndex(([, , materials]) => materials?.length),
+    materialStage: Math.max(0, scenarios[id].splits.findIndex(([, , materials]) => materials?.length)),
     milestones: scenarios[id].splits.map(([name, target, materials]) => ({
       name, target, actual: null, materials: (materials || []).map(goal => ({ ...goal }))
     }))
