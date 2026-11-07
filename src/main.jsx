@@ -155,7 +155,7 @@ function Dashboard() {
       <p className="form-help">Recipe data is a small, bundled reference, not live wiki data. <a href="https://github.com/Sunset1014/Satisfactory-Production-Planner/blob/70185973519e5590dde85189ea37bb16c2363d6b/js/game-data.js">Recipe source</a>.</p>
       <p className="feedback" role="status" aria-live="polite">{feedback}</p>
     </section>
-    <footer><span><strong>FICSIT</strong> &nbsp; / &nbsp; PIONEER ASSISTANCE SYSTEM</span><span>COMPLY. BUILD. SUCCEED. <b>▰</b></span><p className="disclaimer">This is a fan-made, unofficial tool and is not affiliated with or endorsed by Coffee Stain Studios. All trademarks and third-party material remain the property of their respective owners; no ownership is claimed, and data accuracy is not guaranteed.</p></footer>
+    <footer><span><strong>FICSIT</strong> &nbsp; / &nbsp; PIONEER ASSISTANCE SYSTEM</span><span>COMPLY. BUILD. SUCCEED. <b>▰</b> &nbsp; / &nbsp; <a href="https://spmsec.dev">authors website</a></span><p className="disclaimer">This is a fan-made, unofficial tool and is not affiliated with or endorsed by Coffee Stain Studios. All trademarks and third-party material remain the property of their respective owners; no ownership is claimed, and data accuracy is not guaranteed.</p></footer>
   </main>;
 }
 
