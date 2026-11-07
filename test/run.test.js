@@ -4,18 +4,26 @@ import { elapsed, formatTime, parseTime, preset, readRun, scenarios } from '../s
 import { calculateMaterials, validGoal } from '../src/materials.js';
 
 test('presets provide independent, complete example routes', () => {
-  for (const [id, scenario] of Object.entries(scenarios)) {
+  for (const [id, scenario] of Object.entries(scenarios).filter(([id]) => id !== 'custom')) {
     const run = preset(id);
     assert.equal(run.scenario, id);
     assert.equal(run.elapsed, 0);
     assert.equal(run.startedAt, null);
     assert.ok(run.milestones.length > 0);
     assert.ok(run.milestones.every(item => item.actual === null && Number.isInteger(item.target)));
-    assert.match(run.milestones.at(-1).name, /Phase [12]/);
+    assert.match(run.milestones.at(-1).name, /Phase [1-4]/);
     run.milestones[0].name = 'Modified';
     assert.notEqual(preset(id).milestones[0].name, 'Modified');
     assert.ok(scenario.name);
   }
+});
+
+test('free-form route starts empty and can be configured', () => {
+  const run = preset('custom');
+  assert.equal(run.scenario, 'custom');
+  assert.deepEqual(run.milestones, []);
+  assert.equal(run.materialStage, 0);
+  assert.match(scenarios.custom.name, /Free form/);
 });
 
 test('legacy saved runs retain progress and become custom routes', () => {
@@ -38,11 +46,18 @@ test('time parsing and formatting handles long minutes and invalid inputs', () =
 test('phase presets have independent delivery requirements', () => {
   const first = preset('phase1');
   const second = preset('phase2');
+  const third = preset('phase3');
+  const fourth = preset('phase4');
   assert.deepEqual(first.milestones.at(-1).materials, [{ item: 'Smart Plating', quantity: 50, mode: 'recipe' }]);
   assert.deepEqual(second.milestones.at(-1).materials.map(goal => goal.quantity), [1000, 1000, 100]);
+  assert.deepEqual(third.milestones.at(-1).materials.map(goal => goal.item), ['Modular Engine', 'Adaptive Control Unit', 'Automated Wiring']);
+  assert.deepEqual(fourth.milestones.at(-1).materials.map(goal => goal.item), ['Assembly Director System', 'Magnetic Field Generator', 'Thermal Propulsion Rocket', 'Nuclear Pasta']);
   first.milestones.at(-1).materials[0].quantity = 1;
   assert.equal(preset('phase1').milestones.at(-1).materials[0].quantity, 50);
   assert.deepEqual(readRun(JSON.stringify(second)), second);
+  third.milestones.at(-1).materials[0].quantity = 1;
+  assert.equal(preset('phase3').milestones.at(-1).materials[0].quantity, 500);
+  assert.equal(readRun(JSON.stringify(fourth)).scenario, 'phase4');
 });
 
 test('material calculations aggregate goals before rounding batches', () => {
